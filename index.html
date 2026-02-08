@@ -3,71 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenRouter Prompt Architect | Premium AI Studio</title>
+    <title>AI Prompt Architect | Premium AI Studio</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=JetBrains+Mono&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="bg-grid">
+    <div class="star-field" id="star-field"></div>
+    
     <div class="container">
-        <header>
-            <h1>Prompt Architect 🥧</h1>
-            <p>သင့်ရဲ့ OpenRouter Key ဖြင့် အဆင့်မြင့် प्रोफेशनल AI Prompt များ အခမဲ့ ဖန်တီးလိုက်ပါ။</p>
+        <header class="app-header">
+            <div class="logo-area">
+                <h1 class="text-gradient">AI Prompt Studio 🥧</h1>
+                <p class="subtitle">သင့်ရဲ့ စိတ်ကူးတွေကို Professional Prompt များအဖြစ် ဖန်တီးပေးမည့် Premium Architect</p>
+            </div>
+            <div class="header-actions">
+                <button id="open-settings" class="icon-btn" title="Settings">
+                    <i data-lucide="settings"></i>
+                </button>
+            </div>
         </header>
 
-        <section class="card api-section">
-            <div class="collapsible-header">
-                <label>OpenRouter API Config</label>
-                <button id="toggle-api" class="api-toggle-btn">Settings</button>
-            </div>
-            <div id="api-controls" class="hidden">
-                <div class="input-group">
-                    <input type="password" id="api-key" placeholder="Paste your OpenRouter Key here (sk-or-...)">
-                    <button id="save-key">Secure Save</button>
-                </div>
-                <p class="hint">API Key မရှိလျှင် စနစ်တွင်ပါသော Master Key ကို အသုံးပြုပါမည်။</p>
-            </div>
-        </section>
+        <nav class="tab-nav glass">
+            <button class="tab-link active" data-tab="generator">
+                <i data-lucide="sparkles"></i> <span>Generator</span>
+            </button>
+            <button class="tab-link" data-tab="image">
+                <i data-lucide="image"></i> <span>Image AI</span>
+            </button>
+            <button class="tab-link" data-tab="coding">
+                <i data-lucide="code-2"></i> <span>Coding</span>
+            </button>
+        </nav>
 
-        <main class="card main-app">
-            <div class="input-area">
-                <label for="prompt-input">ဘာအကြောင်းအရာအတွက် Prompt ဖန်တီးချင်တာလဲ?</label>
-                <textarea id="prompt-input" placeholder="ဥပမာ - နည်းပညာအကြောင်း ဆောင်းပါးတစ်ပုဒ် ရေးခိုင်းချင်တာ..."></textarea>
-                
-                <div class="controls">
-                    <div class="sel-wrapper style-full">
-                        <label>Prompt Style</label>
-                        <select id="style-select">
-                            <option value="creative">Creative & Detailed</option>
-                            <option value="concise">Short & Precise</option>
-                            <option value="technical">Technical Logic</option>
-                            <option value="academic">Academic Style</option>
+        <main class="main-content">
+            <!-- Generator Tab -->
+            <section id="tab-generator" class="tab-content active">
+                <div class="input-card glass glow-border">
+                    <div class="input-section">
+                        <label class="section-label">Category</label>
+                        <select id="category-select" class="custom-select">
+                            <option value="general">🌐 General Purpose</option>
+                            <option value="writing">✍️ Content Writing</option>
+                            <option value="marketing">📢 Marketing & Ads</option>
+                            <option value="education">📚 Teaching & Learning</option>
+                            <option value="business">💼 Business Strategy</option>
+                            <option value="data">📊 Data Analysis</option>
                         </select>
                     </div>
-                    <div class="sel-wrapper btn-align">
-                        <label>&nbsp;</label>
-                        <button id="generate-btn">Generate Prompt</button>
+
+                    <div class="input-section">
+                        <label class="section-label">Tone & Style</label>
+                        <div class="tone-chips" id="tone-selector">
+                            <button class="tone-chip active">Professional</button>
+                            <button class="tone-chip">Casual</button>
+                            <button class="tone-chip">Technical</button>
+                            <button class="tone-chip">Creative</button>
+                            <button class="tone-chip">Academic</button>
+                        </div>
                     </div>
+
+                    <div class="input-section">
+                        <label class="section-label">Topic / Subject</label>
+                        <input type="text" id="prompt-input" placeholder="ဥပမာ - နည်းပညာအကြောင်း ဆောင်းပါးတစ်ပုဒ် ရေးခိုင်းချင်တာ..." class="main-input">
+                    </div>
+
+                    <div class="input-section">
+                        <label class="section-label">Additional Context (Optional)</label>
+                        <textarea id="context-input" placeholder="ထပ်ဖြည့်ချင်တဲ့ အချက်အလက်တွေ ရှိရင် ဒီမှာ ရေးပေးပါ..." rows="3"></textarea>
+                    </div>
+
+                    <button id="generate-btn" class="btn-gradient">
+                        <i data-lucide="zap"></i> <span>Generate Prompt</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Image Tab -->
+            <section id="tab-image" class="tab-content">
+                <div class="input-card glass glow-border">
+                    <div class="input-section">
+                        <label class="section-label">Image Description</label>
+                        <textarea id="image-input" placeholder="Describe the image you want to generate..." rows="4"></textarea>
+                    </div>
+                    <div class="input-section">
+                        <label class="section-label">Art Style</label>
+                        <select id="image-style" class="custom-select">
+                            <option value="cinematic">Cinematic Lighting</option>
+                            <option value="digital-art">Digital Art</option>
+                            <option value="photorealistic">Photorealistic</option>
+                            <option value="anime">Anime Style</option>
+                            <option value="cyberpunk">Cyberpunk</option>
+                            <option value="oil-painting">Oil Painting</option>
+                        </select>
+                    </div>
+                    <button id="generate-image-btn" class="btn-gradient glow-accent" style="--primary: 330 80% 62%; --accent: 280 75% 60%;">
+                        <i data-lucide="palette"></i> <span>Architect Image Prompt</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Coding Tab -->
+            <section id="tab-coding" class="tab-content">
+                <div class="input-card glass glow-border">
+                    <div class="input-section">
+                        <label class="section-label">Language / Framework</label>
+                        <input type="text" id="coding-lang" placeholder="e.g., React, Python, Node.js..." class="main-input">
+                    </div>
+                    <div class="input-section">
+                        <label class="section-label">Problem Statement</label>
+                        <textarea id="coding-input" placeholder="Describe the function or logic you need..." rows="4"></textarea>
+                    </div>
+                    <button id="generate-code-btn" class="btn-gradient" style="--primary: 200 85% 50%; --accent: 250 85% 67%;">
+                        <i data-lucide="code"></i> <span>Build Logic Prompt</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loader -->
+            <div id="loader" class="hidden">
+                <div class="loader-content">
+                    <div class="spinner"></div>
+                    <p>Architecting your prompt...</p>
                 </div>
             </div>
 
-            <div id="loader" class="hidden">
-                <div class="spinner"></div>
-                <p>Architecting your prompt...</p>
-            </div>
-
-            <div id="result-area" class="hidden result-area">
-                <label>Architected Prompt</label>
-                <div class="result-box">
-                    <pre id="output-text"></pre>
-                    <button id="copy-btn">Copy to Clipboard</button>
+            <!-- Result Area -->
+            <div id="result-area" class="hidden">
+                <div class="result-card glass glow-border">
+                    <div class="result-header">
+                        <h3>Architected Result</h3>
+                        <button id="copy-btn" class="icon-btn-text">
+                            <i data-lucide="copy"></i> <span>Copy</span>
+                        </button>
+                    </div>
+                    <div class="result-body">
+                        <pre id="output-text"></pre>
+                    </div>
                 </div>
             </div>
         </main>
 
-        <footer>
-            <p>Version 7.1 | OpenRouter Engine | Designed with ❤️ by Thar Gyi & Ko Paing 🥧</p>
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content glass glow-border">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button id="close-settings" class="icon-btn"><i data-lucide="x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-section">
+                        <label>OpenRouter API Key</label>
+                        <input type="password" id="api-key-input" placeholder="sk-or-v1-...">
+                        <p class="hint">API Key ကို သင့် Browser မှာတင် လုံခြုံစွာ သိမ်းဆည်းပေးထားပါသည်။</p>
+                    </div>
+                    <button id="save-settings" class="btn-gradient">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <p>Version 8.0 | Engineered by Thar Gyi & Ko Paing 🥧</p>
         </footer>
     </div>
-    <script src="script.js?v=12"></script>
+
+    <script src="script.js?v=13"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
