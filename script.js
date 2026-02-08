@@ -48,7 +48,7 @@ generateBtn.addEventListener('click', async () => {
 });
 
 async function callGeminiAPI(key, input, style) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
     
     const systemInstruction = `You are a professional Prompt Engineer. Your task is to transform the user's basic idea into a high-quality, professional, and effective prompt for AI models. 
     Style requested: ${style}. 
