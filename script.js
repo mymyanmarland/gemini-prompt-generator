@@ -55,10 +55,9 @@ generateBtn.addEventListener('click', async () => {
 });
 
 async function callGeminiAPI(key, input, style, model) {
-    console.log(`Calling Gemini API via Proxy with model: ${model}...`);
+    console.log(`Calling Gemini API via Proxy v2.1 with model: ${model}...`);
     
-    // Instead of calling Google directly, we call our own Proxy API
-    const url = `/api/proxy`;
+    const url = `/api/proxy?cb=${Date.now()}`;
     
     const systemInstruction = `You are a professional Prompt Engineer. Your task is to transform the user's basic idea into a high-quality, professional, and effective prompt for AI models. 
     Style requested: ${style}. 
@@ -70,6 +69,7 @@ async function callGeminiAPI(key, input, style, model) {
         body: JSON.stringify({
             apiKey: key,
             model: model,
+            apiVersion: 'v1beta', // Forcing v1beta from the client
             contents: [{
                 parts: [{ text: `${systemInstruction}\n\nUser Idea: ${input}` }]
             }]

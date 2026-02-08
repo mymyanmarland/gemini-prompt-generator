@@ -10,21 +10,20 @@ export default async function handler(req, res) {
         return;
     }
 
-    if (req.method !== 'POST') {
-        return res.status(200).json({ message: 'Proxy is live. Please use POST request.' });
-    }
+    const { apiKey, model, contents, apiVersion = 'v1beta' } = req.body;
 
-    const { apiKey, model, contents } = req.body;
+    if (req.method !== 'POST') {
+        return res.status(200).json({ status: 'Proxy Active', version: '2.1', support: apiVersion });
+    }
 
     if (!apiKey || !model || !contents) {
-        return res.status(400).json({ error: 'Missing required parameters (apiKey, model, or contents)' });
+        return res.status(400).json({ error: 'Missing required parameters' });
     }
 
-    // Attempting v1beta as it has the widest support for flash/pro models
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    // Proxying to Google AI Studio
+    const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiKey}`;
 
     try {
-        console.log(`Forwarding request to Google for model: ${model}`);
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -32,14 +31,8 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
-        
-        if (!response.ok) {
-            return res.status(response.status).json(data);
-        }
-
-        return res.status(200).json(data);
+        return res.status(response.status).json(data);
     } catch (error) {
-        console.error('Proxy Exception:', error);
-        return res.status(500).json({ error: 'Proxy Server Error: ' + error.message });
+        return res.status(500).json({ error: 'Proxy Exception: ' + error.message });
     }
 }
