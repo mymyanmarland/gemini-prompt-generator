@@ -3,7 +3,6 @@ const saveKeyBtn = document.getElementById('save-key');
 const toggleApiBtn = document.getElementById('toggle-api');
 const apiControls = document.getElementById('api-controls');
 const promptInput = document.getElementById('prompt-input');
-const modelSelect = document.getElementById('model-select');
 const styleSelect = document.getElementById('style-select');
 const generateBtn = document.getElementById('generate-btn');
 const loader = document.getElementById('loader');
@@ -32,7 +31,7 @@ generateBtn.addEventListener('click', async () => {
     const apiKey = apiKeyInput.value;
     const userInput = promptInput.value;
     const style = styleSelect.value;
-    const model = modelSelect.value;
+    const model = "google/gemini-flash-1.5"; // Optimized for OpenRouter Key
 
     if (!userInput) {
         alert('Prompt ဖန်တီးဖို့အတွက် အကြောင်းအရာ တစ်ခုခု အရင်ရေးပေးပါဗျ။');
@@ -56,7 +55,7 @@ generateBtn.addEventListener('click', async () => {
 });
 
 async function callGeminiAPI(key, input, style, model) {
-    const url = `/api/proxy?v=5`;
+    const url = `/api/proxy?v=6`;
     
     const systemInstruction = `You are a world-class Prompt Engineer. Your expertise is in crafting highly effective, detailed, and professional AI prompts.
     Your task: Convert the user's basic request into a superior AI prompt.
@@ -81,7 +80,6 @@ async function callGeminiAPI(key, input, style, model) {
         throw new Error(data.error.message || 'API Communication Error');
     }
     
-    // OpenRouter handling is done in proxy, but response mapping is consistent
     return data.candidates[0].content.parts[0].text;
 }
 
