@@ -36,7 +36,7 @@ export default async function handler(req, res) {
                 'X-Title': 'Premium Prompt Architect'
             },
             body: JSON.stringify({
-                model: 'google/gemini-flash-1.5-8b', // Highly stable on OpenRouter
+                model: 'google/gemini-pro-1.5', // More widely supported and stable on OpenRouter
                 messages: [
                     { role: 'system', content: systemInstruction },
                     { role: 'user', content: `TRANSFORM THIS INPUT INTO A PROFESSIONAL PROMPT: ${prompt}` }
