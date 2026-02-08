@@ -10,17 +10,13 @@ const resultArea = document.getElementById('result-area');
 const outputText = document.getElementById('output-text');
 const copyBtn = document.getElementById('copy-btn');
 
-// Toggle API Section
 toggleApiBtn.addEventListener('click', () => {
     apiControls.classList.toggle('hidden');
     toggleApiBtn.textContent = apiControls.classList.contains('hidden') ? 'Settings' : 'Close';
 });
 
-// Load saved key
 const savedKey = localStorage.getItem('gemini_api_key');
-if (savedKey) {
-    apiKeyInput.value = savedKey;
-}
+if (savedKey) { apiKeyInput.value = savedKey; }
 
 saveKeyBtn.addEventListener('click', () => {
     localStorage.setItem('gemini_api_key', apiKeyInput.value);
@@ -41,46 +37,24 @@ generateBtn.addEventListener('click', async () => {
     resultArea.classList.add('hidden');
 
     try {
-        const enhancedPrompt = await callGeminiAPI(apiKey, userInput, style, "google/gemini-pro-1.5");
-        outputText.textContent = enhancedPrompt;
+        const response = await fetch(`/api/proxy?v=7`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ apiKey, prompt: userInput, style })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+
+        outputText.textContent = data.result;
         resultArea.classList.remove('hidden');
         resultArea.scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
-        console.error("Full Error:", error);
         alert('❌ Error: ' + error.message);
     } finally {
         loader.classList.add('hidden');
     }
 });
-
-async function callGeminiAPI(key, input, style, model) {
-    const url = `/api/proxy?v=6`;
-    
-    const systemInstruction = `You are a world-class Prompt Engineer. Your expertise is in crafting highly effective, detailed, and professional AI prompts.
-    Your task: Convert the user's basic request into a superior AI prompt.
-    Style: ${style}.
-    Constraint: Output ONLY the engineered prompt text. No conversational filler.`;
-
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            apiKey: key, 
-            model: model,
-            contents: [{
-                parts: [{ text: `${systemInstruction}\n\nUSER INPUT: ${input}` }]
-            }]
-        })
-    });
-
-    const data = await response.json();
-    
-    if (data.error) {
-        throw new Error(data.error.message || 'API Communication Error');
-    }
-    
-    return data.candidates[0].content.parts[0].text;
-}
 
 copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(outputText.textContent);
