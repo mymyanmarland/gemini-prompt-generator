@@ -41,7 +41,11 @@ generateBtn.addEventListener('click', async () => {
         outputText.textContent = enhancedPrompt;
         resultArea.classList.remove('hidden');
     } catch (error) {
-        alert('Error: ' + error.message);
+        if (error.message.includes('location')) {
+            alert('Location Error: Gemini API က မြန်မာနိုင်ငံမှာ သုံးလို့မရသေးပါဘူး။ VPN ကို USA ဒါမှမဟုတ် Singapore server နဲ့ ပြောင်းချိတ်ပြီး Website ကို Refresh ပြန်လုပ်ပေးပါဗျ။');
+        } else {
+            alert('Error: ' + error.message);
+        }
     } finally {
         loader.classList.add('hidden');
     }
@@ -49,6 +53,7 @@ generateBtn.addEventListener('click', async () => {
 
 async function callGeminiAPI(key, input, style) {
     console.log("Calling Gemini API v1beta...");
+    // Using gemini-1.5-flash which is widely available in v1beta
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
     
     const systemInstruction = `You are a professional Prompt Engineer. Your task is to transform the user's basic idea into a high-quality, professional, and effective prompt for AI models. 
