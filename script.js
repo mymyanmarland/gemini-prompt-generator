@@ -14,6 +14,7 @@ const copyBtn = document.getElementById('copy-btn');
 // Toggle API Section
 toggleApiBtn.addEventListener('click', () => {
     apiControls.classList.toggle('hidden');
+    toggleApiBtn.textContent = apiControls.classList.contains('hidden') ? 'Settings' : 'Close';
 });
 
 // Load saved key
@@ -24,7 +25,7 @@ if (savedKey) {
 
 saveKeyBtn.addEventListener('click', () => {
     localStorage.setItem('gemini_api_key', apiKeyInput.value);
-    alert('API Key Saved Successfully!');
+    alert('✅ OpenRouter Key Securely Saved!');
 });
 
 generateBtn.addEventListener('click', async () => {
@@ -34,7 +35,7 @@ generateBtn.addEventListener('click', async () => {
     const model = modelSelect.value;
 
     if (!userInput) {
-        alert('Please enter what you want to generate a prompt for!');
+        alert('Prompt ဖန်တီးဖို့အတွက် အကြောင်းအရာ တစ်ခုခု အရင်ရေးပေးပါဗျ။');
         return;
     }
 
@@ -45,35 +46,31 @@ generateBtn.addEventListener('click', async () => {
         const enhancedPrompt = await callGeminiAPI(apiKey, userInput, style, model);
         outputText.textContent = enhancedPrompt;
         resultArea.classList.remove('hidden');
+        resultArea.scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
         console.error("Full Error:", error);
-        if (error.message.includes('No API Key found')) {
-            alert('စနစ်ထဲမှာ Master Key မရှိသေးတဲ့အတွက် သားကြီးရဲ့ ကိုယ်ပိုင် API Key ကို Custom API Settings ထဲမှာ အရင်ထည့်ပေးပါဗျ။');
-        } else if (error.message.includes('location')) {
-            alert('Location Error: မြန်မာနိုင်ငံ IP ဖြစ်နေတဲ့အတွက် Gemini က ခွင့်မပြုပါဘူး။ VPN ခံသုံးပေးပါဗျ။');
-        } else {
-            alert('Error Detail: ' + error.message);
-        }
+        alert('❌ Error: ' + error.message);
     } finally {
         loader.classList.add('hidden');
     }
 });
 
 async function callGeminiAPI(key, input, style, model) {
-    console.log(`Calling Gemini API via Proxy v3.0...`);
+    const url = `/api/proxy?v=5`;
     
-    const url = `/api/proxy?cb=${Date.now()}`;
-    
-    const systemInstruction = `You are a professional Prompt Engineer. Your task is to transform the user's basic idea into a high-quality, professional, and effective prompt for AI models. Style requested: ${style}. Output only the final prompt text without any explanations.`;
+    const systemInstruction = `You are a world-class Prompt Engineer. Your expertise is in crafting highly effective, detailed, and professional AI prompts.
+    Your task: Convert the user's basic request into a superior AI prompt.
+    Style: ${style}.
+    Constraint: Output ONLY the engineered prompt text. No conversational filler.`;
 
     const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            apiKey: key, // Can be empty if master key exists
+            apiKey: key, 
             model: model,
             contents: [{
-                parts: [{ text: `${systemInstruction}\n\nUser Idea: ${input}` }]
+                parts: [{ text: `${systemInstruction}\n\nUSER INPUT: ${input}` }]
             }]
         })
     });
@@ -81,17 +78,16 @@ async function callGeminiAPI(key, input, style, model) {
     const data = await response.json();
     
     if (data.error) {
-        throw new Error(data.error.message || 'API Error');
+        throw new Error(data.error.message || 'API Communication Error');
     }
     
+    // OpenRouter handling is done in proxy, but response mapping is consistent
     return data.candidates[0].content.parts[0].text;
 }
-
-// Removing the fallbackBeta as the proxy handles the primary logic
 
 copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(outputText.textContent);
     const originalText = copyBtn.textContent;
-    copyBtn.textContent = 'Copied!';
+    copyBtn.textContent = '✨ Copied to Clipboard!';
     setTimeout(() => copyBtn.textContent = originalText, 2000);
 });
