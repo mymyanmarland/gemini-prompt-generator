@@ -9,23 +9,60 @@ export default async function handler(req, res) {
         return;
     }
 
-    // Health check / version check
-    if (req.method === 'GET') {
-        return res.status(200).json({ status: 'Proxy Active', version: '3.1', timestamp: new Date().toISOString() });
-    }
-
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
+        return res.status(200).json({ status: 'Universal Proxy Active', version: '4.0' });
     }
 
     const { apiKey, model, contents } = req.body;
     const finalKey = apiKey || process.env.GEMINI_API_KEY;
 
     if (!finalKey) {
-        return res.status(400).json({ error: 'No API Key found. Please set GEMINI_API_KEY in Vercel environment variables.' });
+        return res.status(400).json({ error: 'No API Key found.' });
     }
 
-    // Attempting v1beta as it is the most feature-rich endpoint
+    // Check if it's an OpenRouter Key
+    if (finalKey.startsWith('sk-or-')) {
+        console.log("Routing to OpenRouter...");
+        const openRouterModel = model.includes('/') ? model : `google/${model}`;
+        
+        // Convert Gemini contents to OpenAI messages
+        const messages = contents.map(c => ({
+            role: c.role === 'model' ? 'assistant' : 'user',
+            content: c.parts[0].text
+        }));
+
+        try {
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${finalKey}`,
+                    'HTTP-Referer': 'https://gemini-prompt-generator-phi.vercel.app',
+                    'X-Title': 'Gemini Prompt Architect'
+                },
+                body: JSON.stringify({
+                    model: openRouterModel,
+                    messages: messages
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) return res.status(response.status).json(data);
+            
+            // Format OpenRouter response back to Gemini style for the frontend
+            return res.status(200).json({
+                candidates: [{
+                    content: {
+                        parts: [{ text: data.choices[0].message.content }]
+                    }
+                }]
+            });
+        } catch (error) {
+            return res.status(500).json({ error: 'OpenRouter Proxy Error: ' + error.message });
+        }
+    }
+
+    // Default: Google AI Studio Endpoint
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${finalKey}`;
 
     try {
@@ -36,19 +73,8 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
-
-        // Handle the case where Google returns an error (like 404 for model not found)
-        if (!response.ok) {
-            console.error('Google API Error:', data);
-            return res.status(response.status).json({ 
-                error: data.error?.message || 'Google API Error', 
-                details: data,
-                proxy_version: '3.1'
-            });
-        }
-
-        return res.status(200).json(data);
+        return res.status(response.status).json(data);
     } catch (error) {
-        return res.status(500).json({ error: 'Proxy Server Error: ' + error.message, proxy_version: '3.1' });
+        return res.status(500).json({ error: 'Google Proxy Error: ' + error.message });
     }
 }
