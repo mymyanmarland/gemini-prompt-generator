@@ -54,52 +54,21 @@ generateBtn.addEventListener('click', async () => {
 });
 
 async function callGeminiAPI(key, input, style, model) {
-    console.log(`Calling Gemini API with model: ${model}...`);
+    console.log(`Calling Gemini API via Proxy with model: ${model}...`);
     
-    // Attempting v1 first as it is more standard for newer models
-    const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${key}`;
+    // Instead of calling Google directly, we call our own Proxy API
+    const url = `/api/proxy`;
     
     const systemInstruction = `You are a professional Prompt Engineer. Your task is to transform the user's basic idea into a high-quality, professional, and effective prompt for AI models. 
     Style requested: ${style}. 
     Output only the final prompt text without any explanations.`;
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: `${systemInstruction}\n\nUser Idea: ${input}` }]
-                }]
-            })
-        });
-
-        const data = await response.json();
-        
-        if (data.error) {
-            // If v1 fails with 404, try v1beta as a fallback
-            if (data.error.code === 404) {
-                console.log("v1 not found, trying v1beta fallback...");
-                return await callGeminiAPIv1Beta(key, input, style, model);
-            }
-            throw new Error(data.error.message);
-        }
-        
-        return data.candidates[0].content.parts[0].text;
-    } catch (e) {
-        if (e.message.includes('v1beta')) throw e; // Don't loop
-        return await callGeminiAPIv1Beta(key, input, style, model);
-    }
-}
-
-async function callGeminiAPIv1Beta(key, input, style, model) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
-    const systemInstruction = `You are a professional Prompt Engineer. Your task is to transform the user's basic idea into a high-quality, professional, and effective prompt for AI models. Style requested: ${style}. Output only the final prompt text without any explanations.`;
-
     const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+            apiKey: key,
+            model: model,
             contents: [{
                 parts: [{ text: `${systemInstruction}\n\nUser Idea: ${input}` }]
             }]
@@ -107,11 +76,15 @@ async function callGeminiAPIv1Beta(key, input, style, model) {
     });
 
     const data = await response.json();
+    
     if (data.error) {
-        throw new Error(data.error.message + " (v1beta fallback)");
+        throw new Error(data.error.message || 'API Error');
     }
+    
     return data.candidates[0].content.parts[0].text;
 }
+
+// Removing the fallbackBeta as the proxy handles the primary logic
 
 copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(outputText.textContent);
