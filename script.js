@@ -1,5 +1,7 @@
 const apiKeyInput = document.getElementById('api-key');
 const saveKeyBtn = document.getElementById('save-key');
+const toggleApiBtn = document.getElementById('toggle-api');
+const apiControls = document.getElementById('api-controls');
 const promptInput = document.getElementById('prompt-input');
 const modelSelect = document.getElementById('model-select');
 const styleSelect = document.getElementById('style-select');
@@ -8,6 +10,11 @@ const loader = document.getElementById('loader');
 const resultArea = document.getElementById('result-area');
 const outputText = document.getElementById('output-text');
 const copyBtn = document.getElementById('copy-btn');
+
+// Toggle API Section
+toggleApiBtn.addEventListener('click', () => {
+    apiControls.classList.toggle('hidden');
+});
 
 // Load saved key
 const savedKey = localStorage.getItem('gemini_api_key');
@@ -26,10 +33,6 @@ generateBtn.addEventListener('click', async () => {
     const style = styleSelect.value;
     const model = modelSelect.value;
 
-    if (!apiKey) {
-        alert('Please enter your Gemini API Key first!');
-        return;
-    }
     if (!userInput) {
         alert('Please enter what you want to generate a prompt for!');
         return;
@@ -44,8 +47,10 @@ generateBtn.addEventListener('click', async () => {
         resultArea.classList.remove('hidden');
     } catch (error) {
         console.error("Full Error:", error);
-        if (error.message.includes('location')) {
-            alert('Location Error: Proxy စနစ်သုံးထားပေမဲ့ Vercel Server ကပါ မြန်မာနိုင်ငံက IP လို့ ယူဆနေပါတယ်။ တစ်ချက်လောက် VPN ပိတ်ပြီး (သို့မဟုတ်) VPN နိုင်ငံပြောင်းပြီး ပြန်စမ်းပေးပါဗျ။');
+        if (error.message.includes('No API Key found')) {
+            alert('စနစ်ထဲမှာ Master Key မရှိသေးတဲ့အတွက် သားကြီးရဲ့ ကိုယ်ပိုင် API Key ကို Custom API Settings ထဲမှာ အရင်ထည့်ပေးပါဗျ။');
+        } else if (error.message.includes('location')) {
+            alert('Location Error: မြန်မာနိုင်ငံ IP ဖြစ်နေတဲ့အတွက် Gemini က ခွင့်မပြုပါဘူး။ VPN ခံသုံးပေးပါဗျ။');
         } else {
             alert('Error Detail: ' + error.message);
         }
@@ -55,21 +60,18 @@ generateBtn.addEventListener('click', async () => {
 });
 
 async function callGeminiAPI(key, input, style, model) {
-    console.log(`Calling Gemini API via Proxy v2.1 with model: ${model}...`);
+    console.log(`Calling Gemini API via Proxy v3.0...`);
     
     const url = `/api/proxy?cb=${Date.now()}`;
     
-    const systemInstruction = `You are a professional Prompt Engineer. Your task is to transform the user's basic idea into a high-quality, professional, and effective prompt for AI models. 
-    Style requested: ${style}. 
-    Output only the final prompt text without any explanations.`;
+    const systemInstruction = `You are a professional Prompt Engineer. Your task is to transform the user's basic idea into a high-quality, professional, and effective prompt for AI models. Style requested: ${style}. Output only the final prompt text without any explanations.`;
 
     const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            apiKey: key,
+            apiKey: key, // Can be empty if master key exists
             model: model,
-            apiVersion: 'v1beta', // Forcing v1beta from the client
             contents: [{
                 parts: [{ text: `${systemInstruction}\n\nUser Idea: ${input}` }]
             }]

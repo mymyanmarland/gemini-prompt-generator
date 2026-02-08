@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-    // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -10,18 +9,20 @@ export default async function handler(req, res) {
         return;
     }
 
-    const { apiKey, model, contents, apiVersion = 'v1beta' } = req.body;
-
     if (req.method !== 'POST') {
-        return res.status(200).json({ status: 'Proxy Active', version: '2.1', support: apiVersion });
+        return res.status(200).json({ status: 'Prompt Engine Active', version: '3.0' });
     }
 
-    if (!apiKey || !model || !contents) {
-        return res.status(400).json({ error: 'Missing required parameters' });
+    const { apiKey, model, contents } = req.body;
+    
+    // Master Key from Environment Variables OR User provided key
+    const finalKey = apiKey || process.env.GEMINI_API_KEY;
+
+    if (!finalKey) {
+        return res.status(400).json({ error: 'No API Key found. Please configure GEMINI_API_KEY in Vercel or provide one in the UI.' });
     }
 
-    // Proxying to Google AI Studio
-    const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${finalKey}`;
 
     try {
         const response = await fetch(url, {

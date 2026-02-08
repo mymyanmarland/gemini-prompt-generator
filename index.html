@@ -14,13 +14,18 @@
             <p>သင့်ရဲ့ အခြေခံ စိတ်ကူးတွေကို အဆင့်မြင့် Prompt များအဖြစ် ပြောင်းလဲလိုက်ပါ။</p>
         </header>
 
-        <section class="api-config">
-            <label for="api-key">Gemini API Key</label>
-            <div class="input-group">
-                <input type="password" id="api-key" placeholder="Enter your Google AI API Key">
-                <button id="save-key">Save</button>
+        <section class="api-config" id="api-section">
+            <div class="collapsible-header">
+                <label>Custom API Settings (Optional)</label>
+                <button id="toggle-api">Show/Hide</button>
             </div>
-            <p class="hint">API Key ကို သင့် Browser မှာတင် လုံခြုံစွာ သိမ်းဆည်းပေးထားပါသည်။</p>
+            <div id="api-controls" class="hidden">
+                <div class="input-group">
+                    <input type="password" id="api-key" placeholder="Enter your own Gemini API Key">
+                    <button id="save-key">Save</button>
+                </div>
+                <p class="hint">မှတ်ချက်: API Key မထည့်ထားလျှင် စနစ်တွင်ပါသော Master Key ကို အလိုအလျောက် အသုံးပြုပါမည်။</p>
+            </div>
         </section>
 
         <main>
@@ -60,9 +65,9 @@
         </main>
 
         <footer>
-            <p>Version 2.1 | Created by Thar Gyi & Ko Paing 🥧 | Powering by Gemini AI</p>
+            <p>Version 3.0 | Created by Thar Gyi & Ko Paing 🥧 | Powering by Gemini AI</p>
         </footer>
     </div>
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
 </body>
 </html>

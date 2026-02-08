@@ -53,14 +53,18 @@ label {
     gap: 10px;
 }
 
-input, textarea, select {
-    width: 100%;
-    padding: 12px;
-    background: #0f172a;
-    border: 1px solid #334155;
-    color: white;
-    border-radius: 8px;
-    font-size: 1rem;
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#toggle-api {
+    background: transparent;
+    color: var(--accent);
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border: 1px solid var(--accent);
 }
 
 button {
