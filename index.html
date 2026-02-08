@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Prompt Architect 🥧</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gemini Prompt Architect 🥧</h1>
+            <p>သင့်ရဲ့ အခြေခံ စိတ်ကူးတွေကို အဆင့်မြင့် Prompt များအဖြစ် ပြောင်းလဲလိုက်ပါ။</p>
+        </header>
+
+        <section class="api-config">
+            <label for="api-key">Gemini API Key</label>
+            <div class="input-group">
+                <input type="password" id="api-key" placeholder="Enter your Google AI API Key">
+                <button id="save-key">Save</button>
+            </div>
+            <p class="hint">API Key ကို သင့် Browser မှာတင် လုံခြုံစွာ သိမ်းဆည်းပေးထားပါသည်။</p>
+        </section>
+
+        <main>
+            <div class="input-area">
+                <label for="prompt-input">ဘာအကြောင်းအရာအတွက် Prompt လိုချင်တာလဲ?</label>
+                <textarea id="prompt-input" rows="5" placeholder="ဥပမာ- ဓာတ်ပုံတစ်ပုံအတွက် ဖော်ပြချက် ရေးခိုင်းချင်တာ..."></textarea>
+                
+                <div class="controls">
+                    <select id="style-select">
+                        <option value="creative">Creative & Detailed</option>
+                        <option value="concise">Short & Precise</option>
+                        <option value="technical">Technical & Logical</option>
+                        <option value="story">Storytelling Style</option>
+                    </select>
+                    <button id="generate-btn">Prompt ဖန်တီးမည်</button>
+                </div>
+            </div>
+
+            <div id="loader" class="hidden">
+                <div class="spinner"></div>
+                <p>Gemini စဉ်းစားနေပါတယ်...</p>
+            </div>
+
+            <div id="result-area" class="hidden">
+                <h3>ဖန်တီးပေးလိုက်သော Prompt:</h3>
+                <div class="result-box">
+                    <pre id="output-text"></pre>
+                    <button id="copy-btn">Copy to Clipboard</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Created by Thar Gyi & Ko Paing 🥧 | Powering by Gemini AI</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
