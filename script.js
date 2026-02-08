@@ -31,7 +31,6 @@ generateBtn.addEventListener('click', async () => {
     const apiKey = apiKeyInput.value;
     const userInput = promptInput.value;
     const style = styleSelect.value;
-    const model = "google/gemini-flash-1.5"; // Optimized for OpenRouter Key
 
     if (!userInput) {
         alert('Prompt ဖန်တီးဖို့အတွက် အကြောင်းအရာ တစ်ခုခု အရင်ရေးပေးပါဗျ။');
@@ -42,7 +41,7 @@ generateBtn.addEventListener('click', async () => {
     resultArea.classList.add('hidden');
 
     try {
-        const enhancedPrompt = await callGeminiAPI(apiKey, userInput, style, model);
+        const enhancedPrompt = await callGeminiAPI(apiKey, userInput, style, "google/gemini-pro-1.5");
         outputText.textContent = enhancedPrompt;
         resultArea.classList.remove('hidden');
         resultArea.scrollIntoView({ behavior: 'smooth' });
