@@ -1,19 +1,30 @@
-// Vercel Serverless Function as a Proxy
 export default async function handler(req, res) {
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
+        return res.status(200).json({ message: 'Proxy is live. Please use POST request.' });
     }
 
     const { apiKey, model, contents } = req.body;
 
-    if (!apiKey) {
-        return res.status(400).json({ error: 'API Key is required' });
+    if (!apiKey || !model || !contents) {
+        return res.status(400).json({ error: 'Missing required parameters (apiKey, model, or contents)' });
     }
 
-    // This URL is called from Vercel's servers (usually US/EU), bypassing local blocks
-    const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+    // Attempting v1beta as it has the widest support for flash/pro models
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     try {
+        console.log(`Forwarding request to Google for model: ${model}`);
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -21,8 +32,14 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
-        return res.status(response.status).json(data);
+        
+        if (!response.ok) {
+            return res.status(response.status).json(data);
+        }
+
+        return res.status(200).json(data);
     } catch (error) {
-        return res.status(500).json({ error: 'Proxy Error: ' + error.message });
+        console.error('Proxy Exception:', error);
+        return res.status(500).json({ error: 'Proxy Server Error: ' + error.message });
     }
 }

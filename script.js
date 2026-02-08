@@ -43,10 +43,11 @@ generateBtn.addEventListener('click', async () => {
         outputText.textContent = enhancedPrompt;
         resultArea.classList.remove('hidden');
     } catch (error) {
+        console.error("Full Error:", error);
         if (error.message.includes('location')) {
-            alert('Location Error: Gemini API က မြန်မာနိုင်ငံမှာ သုံးလို့မရသေးပါဘူး။ VPN ကို USA ဒါမှမဟုတ် Singapore server နဲ့ ပြောင်းချိတ်ပြီး Website ကို Refresh ပြန်လုပ်ပေးပါဗျ။');
+            alert('Location Error: Proxy စနစ်သုံးထားပေမဲ့ Vercel Server ကပါ မြန်မာနိုင်ငံက IP လို့ ယူဆနေပါတယ်။ တစ်ချက်လောက် VPN ပိတ်ပြီး (သို့မဟုတ်) VPN နိုင်ငံပြောင်းပြီး ပြန်စမ်းပေးပါဗျ။');
         } else {
-            alert('Error: ' + error.message + '\n\nအကြံပြုချက်: တခြား Model တစ်ခုကို ရွေးပြီး ထပ်စမ်းကြည့်ပေးပါဗျ။');
+            alert('Error Detail: ' + error.message);
         }
     } finally {
         loader.classList.add('hidden');
